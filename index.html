@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <!-- Tells mobile browsers to use the device's real width instead of
+       a pretend 980px "desktop" viewport, which is key for mobile-first CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>PWA Dashboard</title>
+
+  <!-- Links the Web App Manifest so browsers know this is installable -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Sets the browser tab / status-bar colour on Android Chrome -->
+  <meta name="theme-color" content="#4a90d9" />
+
+  <!-- iOS-specific meta tags for home-screen installation -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Dashboard" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header>
+    <h1>PWA Dashboard</h1>
+  </header>
+
+  <main>
+
+    <!-- ── Widget 1: Clock ─────────────────────────────────────────────── -->
+    <!-- No network call — just live DOM updates via setInterval in app.js -->
+    <section class="widget">
+      <h2>Clock</h2>
+      <div id="clock-time">--:--:--</div>
+      <div id="clock-date"></div>
+    </section>
+
+    <!-- ── Widget 2: Random Advice ─────────────────────────────────────── -->
+    <!-- Fetches from api.adviceslip.com on button press (network-first via
+         the service worker; shows real error text on failure) -->
+    <section class="widget">
+      <h2>Random Advice</h2>
+      <p id="advice-result">Press the button to get a piece of advice.</p>
+      <button id="advice-btn">Get Advice</button>
+    </section>
+
+    <!-- ── Widget 3: Notepad ────────────────────────────────────────────── -->
+    <!-- Saves to localStorage so the note persists across reloads -->
+    <section class="widget">
+      <h2>Notepad</h2>
+      <textarea id="note-input" placeholder="Type a note…"></textarea>
+      <div id="note-status"></div>
+      <button id="note-save-btn">Save</button>
+    </section>
+
+  </main>
+
+  <!-- Version stamp — bump this whenever you deploy an update so you can
+       confirm the new version loaded on your device -->
+  <footer>v1</footer>
+
+  <script src="app.js"></script>
+
+  <script>
+    // ── Service Worker registration ────────────────────────────────────────
+    // Feature-detection guard: only run on browsers that support SW
+    // (avoids errors on very old browsers).
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/service-worker.js')
+          .then((reg) => console.log('[App] Service worker registered:', reg.scope))
+          .catch((err) => console.error('[App] Service worker registration failed:', err));
+      });
+    }
+  </script>
+
+</body>
+</html>
